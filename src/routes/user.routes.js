@@ -17,20 +17,32 @@ const notFound = (req, res, next) => {
 
 // Input validation functions for user routes
 const validateUserCreate = (req, res, next) => {
-    if (!req.body.emailAdress || !req.body.firstName || !req.body.lastName) {
+    if (!req.body.emailAdress) {
         return res.status(400).json({
             status: 400,
-            message: 'Missing email address, first name or last name',
+            message: 'Missing email address.',
             data: {}
         })
-    }
-    if (!isEmailAvailable(req.body.emailAdress, database._data)) {
+    } else if (!req.body.firstName) {
+        return res.status(400).json({
+            status: 400,
+            message: 'Missing first name.',
+            data: {}
+        })
+    } else if (!req.body.lastName) {
+        return res.status(400).json({
+            status: 400,
+            message: 'Missing last name.',
+            data: {}
+        })
+    } else if (!isEmailAvailable(req.body.emailAdress, database._data)) {
         return res.status(400).json({
             status: 400,
             message: "Error: User with this email address already exists in the database.",
             data: {}
         })
     }
+
     next()
 }
 

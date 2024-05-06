@@ -8,7 +8,7 @@ const database = require('../dao/inmem-db')
 
 // Tijdelijke functie om niet bestaande routes op te vangen
 const notFound = (req, res, next) => {
-    res.status(404).json({
+    next({
         status: 404,
         message: 'Route not found',
         data: {}
@@ -74,7 +74,7 @@ const validateUserCreateAssert = (req, res, next) => {
         assert(req.body.lastName, 'Missing last name')
         next()
     } catch (ex) {
-        return res.status(400).json({
+        next({
             status: 400,
             message: ex.message,
             data: {}
@@ -90,7 +90,7 @@ const validateUserCreateChaiShould = (req, res, next) => {
         req.body.emailAdress.should.not.be.empty.and.a('string').and.match(/@/)
         next()
     } catch (ex) {
-        return res.status(400).json({
+        next({
             status: 400,
             message: ex.message,
             data: {}

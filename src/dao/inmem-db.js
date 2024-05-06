@@ -51,7 +51,7 @@ const database = {
     add(item, callback) {
         // Simuleer een asynchrone operatie
         setTimeout(() => {
-            const email = item.emailAdress;
+            // const email = item.emailAdress;
             // if (!(isEmailAvailable(email, this._data))) {
             //     callback({message: "Error: User with this email address already exists in the database.", status: 400}, null);
             // } else {
@@ -66,6 +66,31 @@ const database = {
             // }
         }, this._delayTime)
     },
+
+    put(item, callback) {
+        setTimeout(() => {
+            for (let i = 0; i < this._data.length; i++) {
+                if (item.id === this._data[i].id) {
+                    this._data[i].firstName = item.firstName
+                    this._data[i].lastName = item.lastName
+                    this._data[i].emailAdress = item.emailAdress
+                }
+            }
+            callback(null, this._data[item.id])
+        })
+    },
+
+    delete(id, callback) {
+        setTimeout(() => {
+            // for (let i = 0; i < this._data.length; i++) {
+            //     if (id === this._data[i].id) {
+            //         delete this._data[i]
+            //     }
+            // }
+            this._data.splice(id, 1)
+            callback(null, id)
+        }, this._delayTime)
+    }
 
     // const:isEmailAvailable = (email, data) => {
     //     for (let index = 0; index < data.length; index++) {

@@ -20,7 +20,7 @@ const validateUserCreate = (req, res, next) => {
     if (!req.body.emailAdress || !req.body.firstName || !req.body.lastName) {
         return res.status(400).json({
             status: 400,
-            message: 'Missing email, first name or last name',
+            message: 'Missing email address, first name or last name',
             data: {}
         })
     }
@@ -35,13 +35,24 @@ const validateUserCreate = (req, res, next) => {
 }
 
 const isEmailAvailable = (email, data) => {
-    for (let index = 0; index < data.length; index++) {
-        if (data[index].emailAdress === email) {
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].emailAdress === email) {
             return false
         }
     }
     return true
 }
+
+// const validateUserId = (req, res, next) => {
+//     if(typeof req.body.id != 'number') {
+//         return res.status(400).json({
+//             status: 400,
+//             message: 'Id was not a number',
+//             data: {}
+//         })
+//     }
+//     next()
+// }
 
 // Input validation function 2 met gebruik van assert
 const validateUserCreateAssert = (req, res, next) => {
@@ -97,10 +108,10 @@ const validateUserCreateChaiExpect = (req, res, next) => {
 // Userroutes
 router.post('/api/users', validateUserCreate, userController.create)
 router.get('/api/users', userController.getAll)
-router.get('/api/users/:userId', userController.getById)
+router.get('/api/users/:userId',/* validateUserId,*/ userController.getById)
 
 // Tijdelijke routes om niet bestaande routes op te vangen
-router.put('/api/users/:userId', notFound)
-router.delete('/api/users/:userId', notFound)
+router.put('/api/users/:userId', userController.put)
+router.delete('/api/users/:userId', userController.delete)
 
 module.exports = router

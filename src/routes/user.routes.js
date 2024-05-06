@@ -4,7 +4,7 @@ const chai = require('chai')
 chai.should()
 const router = express.Router()
 const userController = require('../controllers/user.controller')
-const logger = require('../util/logger')
+const database = require('../dao/inmem-db')
 
 // Tijdelijke functie om niet bestaande routes op te vangen
 const notFound = (req, res, next) => {
@@ -17,15 +17,54 @@ const notFound = (req, res, next) => {
 
 // Input validation functions for user routes
 const validateUserCreate = (req, res, next) => {
-    if (!req.body.emailAdress || !req.body.firstName || !req.body.lastName) {
-        next({
+    if (!req.body.emailAdress) {
+        return res.status(400).json({
             status: 400,
-            message: 'Missing email or password',
+            message: 'Missing email address.',
+            data: {}
+        })
+    } else if (!req.body.firstName) {
+        return res.status(400).json({
+            status: 400,
+            message: 'Missing first name.',
+            data: {}
+        })
+    } else if (!req.body.lastName) {
+        return res.status(400).json({
+            status: 400,
+            message: 'Missing last name.',
+            data: {}
+        })
+    } else if (!isEmailAvailable(req.body.emailAdress, database._data)) {
+        return res.status(400).json({
+            status: 400,
+            message: "Error: User with this email address already exists in the database.",
             data: {}
         })
     }
+
     next()
 }
+
+const isEmailAvailable = (email, data) => {
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].emailAdress === email) {
+            return false
+        }
+    }
+    return true
+}
+
+// const validateUserId = (req, res, next) => {
+//     if(typeof req.body.id != 'number') {
+//         return res.status(400).json({
+//             status: 400,
+//             message: 'Id was not a number',
+//             data: {}
+//         })
+//     }
+//     next()
+// }
 
 // Input validation function 2 met gebruik van assert
 const validateUserCreateAssert = (req, res, next) => {
@@ -68,11 +107,9 @@ const validateUserCreateChaiExpect = (req, res, next) => {
             /^[a-zA-Z]+$/,
             'firstName must be a string'
         )
-        logger.trace('User successfully validated')
         next()
     } catch (ex) {
-        logger.trace('User validation failed:', ex.message)
-        next({
+        return res.status(400).json({
             status: 400,
             message: ex.message,
             data: {}
@@ -81,12 +118,12 @@ const validateUserCreateChaiExpect = (req, res, next) => {
 }
 
 // Userroutes
-router.post('/api/user', validateUserCreateChaiExpect, userController.create)
-router.get('/api/user', userController.getAll)
-router.get('/api/user/:userId', userController.getById)
+router.post('/api/users', validateUserCreate, userController.create)
+router.get('/api/users', userController.getAll)
+router.get('/api/users/:userId',/* validateUserId,*/ userController.getById)
 
 // Tijdelijke routes om niet bestaande routes op te vangen
-router.put('/api/user/:userId', notFound)
-router.delete('/api/user/:userId', notFound)
+router.put('/api/users/:userId', userController.put)
+router.delete('/api/users/:userId', userController.delete)
 
 module.exports = router

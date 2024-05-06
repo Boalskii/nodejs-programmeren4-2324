@@ -62,6 +62,48 @@ let userController = {
                 })
             }
         })
+    },
+
+    put: (req, res, next) => {
+        const user = req.body
+        const userId = req.params.userId
+
+        userService.put(user, userId, (error, success) => {
+            if (error) {
+                return next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                })
+            } if (success) {
+                res.status(200).json({
+                    status: success.status,
+                    message: success.message,
+                    data: success.data
+                })
+            }
+        })
+
+    },
+
+    delete: (req, res, next) => {
+        const userId = req.params.userId
+        userService.delete(userId, (error, success) => {
+            if (error) {
+                return next({
+                    status: error.status,
+                    message: error.message,
+                    data: {}
+                })
+            }
+            if (success) {
+                res.status(200).json({
+                    status: success.status,
+                    message: success.message,
+                    data: success.data
+                })
+            }
+        })
     }
 
     // Todo: Implement the update and delete methods
